@@ -22,7 +22,7 @@ function Top() {
   const [data, setData] = useState("");
 
   const regPosts = async () => {
-    const CreatePostsInput = {
+    const createPostsInput = {
       name: name,
       url: url,
       description: description
@@ -30,7 +30,7 @@ function Top() {
 
     try {
       await API.graphql(
-        graphqlOperation(createPosts, { input: CreatePostsInput })
+        graphqlOperation(createPosts, { input: createPostsInput })
       );
       toaster.success("Hooray!Registry Complete!");
       getPosts();
@@ -48,12 +48,12 @@ function Top() {
   };
 
   const delPosts = async d => {
-    const DeletePostsInput = {
+    const deletePostsInput = {
       id: d.id
     };
     try {
       await API.graphql(
-        graphqlOperation(deletePosts, { input: DeletePostsInput })
+        graphqlOperation(deletePosts, { input: deletePostsInput })
       );
       toaster.success("OK! Delete Complete!");
       getPosts();
