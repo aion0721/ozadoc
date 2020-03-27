@@ -7,7 +7,7 @@ import {
   Button,
   Spinner,
   Link,
-  Icon,
+  IconButton,
   Dialog
 } from "evergreen-ui";
 import { API, graphqlOperation } from "aws-amplify";
@@ -130,14 +130,18 @@ function Top() {
                     </Table.TextCell>
                     <Table.TextCell>{d.description}</Table.TextCell>
                     <Table.TextCell>
-                      <Icon
-                        icon="trash"
-                        onClick={() => {
-                          delPosts(d);
-                          getPosts();
-                        }}
-                      />
-                      <Icon icon="edit" />
+                      <Pane float="left" margin={5}>
+                        <IconButton
+                          icon="trash"
+                          onClick={() => {
+                            delPosts(d);
+                            getPosts();
+                          }}
+                        />
+                      </Pane>
+                      <Pane float="left" margin={5}>
+                        <IconButton icon="edit" />
+                      </Pane>
                     </Table.TextCell>
                   </Table.Row>
                 );
