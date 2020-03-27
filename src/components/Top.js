@@ -12,20 +12,19 @@ import {
 } from "evergreen-ui";
 import { API, graphqlOperation } from "aws-amplify";
 import { listPostss } from "../graphql/queries";
-import { createPosts } from "../graphql/mutations";
-import { deletePosts } from "../graphql/mutations";
+import { createPosts, deletePosts } from "../graphql/mutations";
 
 function Top() {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
-  const [data, setData] = useState("");
+  const [posts, setPosts] = useState("");
 
   const regPosts = async () => {
     const createPostsInput = {
-      name: name,
-      url: url,
-      description: description
+      name,
+      url,
+      description
     };
 
     try {
@@ -41,7 +40,7 @@ function Top() {
   const getPosts = async () => {
     try {
       const posts = await API.graphql(graphqlOperation(listPostss));
-      setData(posts);
+      setPosts(posts);
     } catch (e) {
       console.log(e);
     }
@@ -98,7 +97,7 @@ function Top() {
           ></TextInputField>
           <Button onClick={regPosts}>Registry!</Button>
         </Pane>
-        {data ? (
+        {posts ? (
           <Table>
             <Table.Head>
               <Table.TextHeaderCell>name</Table.TextHeaderCell>
@@ -107,7 +106,7 @@ function Top() {
               <Table.TextHeaderCell>Other</Table.TextHeaderCell>
             </Table.Head>
             <Table.Body>
-              {data.data.listPostss.items.map(d => {
+              {posts.data.listPostss.items.map(d => {
                 return (
                   <Table.Row key={d.id}>
                     <Table.TextCell>{d.name}</Table.TextCell>
