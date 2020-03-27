@@ -7,34 +7,32 @@ import {
   Button,
   Spinner,
   Link,
-  Icon,
-  Dialog
+  IconButton,
+  toaster
 } from "evergreen-ui";
 import { API, graphqlOperation } from "aws-amplify";
 import { listPostss } from "../graphql/queries";
-import { createPosts } from "../graphql/mutations";
-import { deletePosts } from "../graphql/mutations";
+import { createPosts, deletePosts } from "../graphql/mutations";
 
 function Top() {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
-  const [data, setData] = useState("");
-  const [isDialogShown, setIsDialogShown] = useState(false);
+  const [posts, setPosts] = useState("");
 
   const regPosts = async () => {
-    const CreatePostsInput = {
-      name: name,
-      url: url,
-      description: description
+    const createPostsInput = {
+      name,
+      url,
+      description
     };
 
     try {
       await API.graphql(
-        graphqlOperation(createPosts, { input: CreatePostsInput })
+        graphqlOperation(createPosts, { input: createPostsInput })
       );
-      console.log("ok");
-      setIsDialogShown(true);
+      toaster.success("Hooray!Registry Complete!");
+      getPosts();
     } catch (e) {
       console.log(e);
     }
@@ -42,20 +40,22 @@ function Top() {
   const getPosts = async () => {
     try {
       const posts = await API.graphql(graphqlOperation(listPostss));
-      setData(posts);
+      setPosts(posts);
     } catch (e) {
       console.log(e);
     }
   };
 
   const delPosts = async d => {
-    const DeletePostsInput = {
+    const deletePostsInput = {
       id: d.id
     };
     try {
       await API.graphql(
-        graphqlOperation(deletePosts, { input: DeletePostsInput })
+        graphqlOperation(deletePosts, { input: deletePostsInput })
       );
+      toaster.success("OK! Delete Complete!");
+      getPosts();
     } catch (e) {
       console.log(e);
     }
@@ -67,19 +67,6 @@ function Top() {
   return (
     <div>
       <Pane padding={10} margin={10}>
-        <Dialog
-          isShown={isDialogShown}
-          hasCancel={false}
-          title="Complete!"
-          confirmLabel="OK!"
-          onConfirm={() => {
-            setIsDialogShown(false);
-            getPosts();
-          }}
-          onCloseComplete={() => setIsDialogShown(false)}
-        >
-          Hooray!Thankyou!!
-        </Dialog>
         <Heading size={800} marginTop="default">
           TOP
         </Heading>
@@ -110,7 +97,7 @@ function Top() {
           ></TextInputField>
           <Button onClick={regPosts}>Registry!</Button>
         </Pane>
-        {data ? (
+        {posts ? (
           <Table>
             <Table.Head>
               <Table.TextHeaderCell>name</Table.TextHeaderCell>
@@ -119,7 +106,7 @@ function Top() {
               <Table.TextHeaderCell>Other</Table.TextHeaderCell>
             </Table.Head>
             <Table.Body>
-              {data.data.listPostss.items.map(d => {
+              {posts.data.listPostss.items.map(d => {
                 return (
                   <Table.Row key={d.id}>
                     <Table.TextCell>{d.name}</Table.TextCell>
@@ -130,14 +117,17 @@ function Top() {
                     </Table.TextCell>
                     <Table.TextCell>{d.description}</Table.TextCell>
                     <Table.TextCell>
-                      <Icon
-                        icon="trash"
-                        onClick={() => {
-                          delPosts(d);
-                          getPosts();
-                        }}
-                      />
-                      <Icon icon="edit" />
+                      <Pane float="left" margin={5}>
+                        <IconButton
+                          icon="trash"
+                          onClick={async () => {
+                            await delPosts(d);
+                          }}
+                        />
+                      </Pane>
+                      <Pane float="left" margin={5}>
+                        <IconButton icon="edit" />
+                      </Pane>
                     </Table.TextCell>
                   </Table.Row>
                 );
