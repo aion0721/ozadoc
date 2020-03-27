@@ -8,7 +8,7 @@ import {
   Spinner,
   Link,
   IconButton,
-  Dialog
+  toaster
 } from "evergreen-ui";
 import { API, graphqlOperation } from "aws-amplify";
 import { listPostss } from "../graphql/queries";
@@ -20,7 +20,6 @@ function Top() {
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
   const [data, setData] = useState("");
-  const [isDialogShown, setIsDialogShown] = useState(false);
 
   const regPosts = async () => {
     const CreatePostsInput = {
@@ -33,8 +32,8 @@ function Top() {
       await API.graphql(
         graphqlOperation(createPosts, { input: CreatePostsInput })
       );
-      console.log("ok");
-      setIsDialogShown(true);
+      toaster.success("Hooray!Registry Complete!");
+      getPosts();
     } catch (e) {
       console.log(e);
     }
@@ -56,6 +55,8 @@ function Top() {
       await API.graphql(
         graphqlOperation(deletePosts, { input: DeletePostsInput })
       );
+      toaster.success("OK! Delete Complete!");
+      getPosts();
     } catch (e) {
       console.log(e);
     }
@@ -67,19 +68,6 @@ function Top() {
   return (
     <div>
       <Pane padding={10} margin={10}>
-        <Dialog
-          isShown={isDialogShown}
-          hasCancel={false}
-          title="Complete!"
-          confirmLabel="OK!"
-          onConfirm={() => {
-            setIsDialogShown(false);
-            getPosts();
-          }}
-          onCloseComplete={() => setIsDialogShown(false)}
-        >
-          Hooray!Thankyou!!
-        </Dialog>
         <Heading size={800} marginTop="default">
           TOP
         </Heading>
@@ -135,7 +123,6 @@ function Top() {
                           icon="trash"
                           onClick={async () => {
                             await delPosts(d);
-                            getPosts();
                           }}
                         />
                       </Pane>
