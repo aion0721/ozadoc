@@ -133,8 +133,8 @@ function Top() {
                       <Pane float="left" margin={5}>
                         <IconButton
                           icon="trash"
-                          onClick={() => {
-                            delPosts(d);
+                          onClick={async () => {
+                            await delPosts(d);
                             getPosts();
                           }}
                         />
